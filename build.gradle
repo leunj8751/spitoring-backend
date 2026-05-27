@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.spitoring'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // ─── Spring Boot Core ─────────────────────────────────────────────────────
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // ─── Cache (알림 중복 방지 + 크롤링 결과 단기 캐싱) ──────────────────────
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // ─── Database ─────────────────────────────────────────────────────────────
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.h2database:h2'                     // 로컬 / 테스트 전용
+
+    // ─── Lombok ───────────────────────────────────────────────────────────────
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // ─── MapStruct (DTO ↔ Entity 매핑) ────────────────────────────────────────
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    // Lombok + MapStruct 어노테이션 처리 순서 보장
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+    // ─── Web Crawling (동행복권 스피또 데이터 파싱) ───────────────────────────
+    implementation 'org.jsoup:jsoup:1.18.3'
+
+    // ─── FCM Push Notification ────────────────────────────────────────────────
+    implementation 'com.google.firebase:firebase-admin:9.4.2'
+
+    // ─── JWT (앱 사용자 인증) ─────────────────────────────────────────────────
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+    // ─── Test ─────────────────────────────────────────────────────────────────
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// 컴파일 경고 억제 (MapStruct unmapped 필드 경고 제외)
+compileJava.options.compilerArgs += [
+    '-Amapstruct.defaultComponentModel=spring',
+    '-Amapstruct.unmappedTargetPolicy=IGNORE'
+]
