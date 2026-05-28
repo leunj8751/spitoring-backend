@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: dev
 
   application:
     name: spitoring-backend
@@ -14,10 +14,6 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
 
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
 
 server:
   port: 8080
@@ -44,5 +40,5 @@ app:
   fcm:
     credentials-path: ${FCM_CREDENTIALS_PATH:firebase/service-account.json}
   crawler:
-    spitto-url: https://dhlottery.co.kr/gameInfo.do?method=gameInfo&strGameId=spitto
-    schedule-cron: "0 0/30 * * * *"   # 30분마다
+    spitto-url: https://www.dhlottery.co.kr/selectMainInfo.do
+    schedule-cron: "0 0 5 * * *"      # 매일 새벽 5시

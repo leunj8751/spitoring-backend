@@ -20,10 +20,14 @@ public class FcmConfig {
 
     @PostConstruct
     public void initialize() throws IOException {
+        ClassPathResource resource = new ClassPathResource(credentialsPath);
+        if (!resource.exists()) {
+            log.warn("FCM 인증 파일이 없습니다. Firebase 초기화를 건너뜁니다. ({})", credentialsPath);
+            return;
+        }
         if (FirebaseApp.getApps().isEmpty()) {
             FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(
-                    new ClassPathResource(credentialsPath).getInputStream()))
+                .setCredentials(GoogleCredentials.fromStream(resource.getInputStream()))
                 .build();
             FirebaseApp.initializeApp(options);
             log.info("Firebase initialized");

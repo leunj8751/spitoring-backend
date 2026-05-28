@@ -31,11 +31,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    // ─── Cache (알림 중복 방지 + 크롤링 결과 단기 캐싱) ──────────────────────
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
     // ─── Database ─────────────────────────────────────────────────────────────
     runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'  // dev 환경 MariaDB
     runtimeOnly 'com.h2database:h2'                     // 로컬 / 테스트 전용
 
     // ─── Lombok ───────────────────────────────────────────────────────────────
