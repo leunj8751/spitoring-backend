@@ -54,6 +54,9 @@ public class SpittoStock {
     @Column(name = "rnk3_total", nullable = false)
     private Long rnk3Total;          // 3등 전체 발행 수량
 
+    @Column(name = "pblcn_qty", nullable = false)
+    private Long pblcnQty;           // 발행량
+
     @CreationTimestamp
     @Column(name = "inserted_at", nullable = false, updatable = false)
     private LocalDateTime insertedAt;

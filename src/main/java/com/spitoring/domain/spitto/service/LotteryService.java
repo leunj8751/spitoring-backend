@@ -15,14 +15,6 @@ import java.time.LocalDateTime;
 public class LotteryService {
 
     private final SpittoStockRepository spittoStockRepository;
-    private final SpittoCrawler spittoCrawler;
-
-    @Transactional
-    public int crawlAndSave() throws Exception {
-        var stocks = spittoCrawler.crawl();
-        spittoStockRepository.saveAll(stocks);
-        return stocks.size();
-    }
 
     public DashboardResponse getDashboard() {
         var items = spittoStockRepository.findAllByOrderByGameTypeCdAscDrawDesc().stream()

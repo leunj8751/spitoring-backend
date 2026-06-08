@@ -15,12 +15,6 @@ public class LotteryController {
 
     private final LotteryService lotteryService;
 
-    @GetMapping("/crawl")
-    public ApiResponse<String> crawl() throws Exception {
-        int count = lotteryService.crawlAndSave();
-        return ApiResponse.ok(count + "건 저장 완료");
-    }
-
     @GetMapping("/dashboard")
     public ApiResponse<DashboardResponse> getDashboard() {
         return ApiResponse.ok(lotteryService.getDashboard());

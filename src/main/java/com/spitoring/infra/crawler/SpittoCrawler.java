@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spitoring.domain.spitto.domain.SpittoStock;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,13 +13,17 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Component
+@Service
 public class SpittoCrawler {
 
     @Value("${app.crawler.spitto-url}")
     private String spittoUrl;
+
+    @Value("${app.crawler.detail-url}")
+    private String detailUrl;
 
     private final HttpClient httpClient = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(10))
@@ -55,6 +58,9 @@ public class SpittoCrawler {
             long[] rnk2 = parseRank(item.path("stRnk2Rt").asText());
             long[] rnk3 = parseRank(item.path("stRnk3Rt").asText());
 
+            int ntslWnSn = item.path("ntslWnSn").asInt();
+            long pblcnQty = fetchPblcnQty(ntslWnSn);
+
             result.add(SpittoStock.builder()
                 .gameTypeCd(item.path("stGmTypeCd").asText())
                 .gameTypeNm(item.path("stGmTypeNm").asText())
@@ -66,11 +72,33 @@ public class SpittoCrawler {
                 .rnk2Total(rnk2[1])
                 .rnk3Remaining(rnk3[0])
                 .rnk3Total(rnk3[1])
+                .pblcnQty(pblcnQty)
                 .build());
         }
 
         log.info("[Crawler] 스피또 데이터 {}건 수집 완료", result.size());
         return result;
+    }
+
+    private long fetchPblcnQty(int ntslWnSn) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(detailUrl + "?ntslWnSn=" + ntslWnSn))
+            .timeout(Duration.ofSeconds(10))
+            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+            .header("Accept", "application/json")
+            .header("Referer", "https://www.dhlottery.co.kr/")
+            .GET()
+            .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            log.warn("[Crawler] 발행량 조회 실패 - ntslWnSn={}, 상태코드={}", ntslWnSn, response.statusCode());
+            return 0L;
+        }
+
+        return objectMapper.readTree(response.body())
+            .path("data").path("result").path("pblcnQty").asLong(0L);
     }
 
 
