@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +19,12 @@ public class LotteryService {
     private final SpittoStockRepository spittoStockRepository;
 
     public DashboardResponse getDashboard() {
-        var items = spittoStockRepository.findAllByOrderByGameTypeCdAscDrawDesc().stream()
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+
+        var items = spittoStockRepository
+            .findAllByInsertedAtBetweenOrderByGameTypeCdAscDrawDesc(startOfDay, endOfDay)
+            .stream()
             .map(DashboardResponse.SpittoItemDto::from)
             .toList();
 

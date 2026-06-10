@@ -17,26 +17,42 @@ public record DashboardResponse(
         String gameTypeNm,
         Integer draw,
         Integer stockRate,
+        Long pblcnQty,
         Long rnk1Remaining,
         Long rnk1Total,
         Long rnk2Remaining,
         Long rnk2Total,
         Long rnk3Remaining,
-        Long rnk3Total
+        Long rnk3Total,
+        Double rnk1AvgWinProbability,
+        Double rnk1CurrentWinProbability,
+        Double rnk2AvgWinProbability,
+        Double rnk2CurrentWinProbability
     ) {
         public static SpittoItemDto from(SpittoStock stock) {
+            long circulatingQty = Math.round(stock.getPblcnQty() * stock.getStockRate() / 100.0);
+
             return new SpittoItemDto(
                 stock.getGameTypeCd(),
                 stock.getGameTypeNm(),
                 stock.getDraw(),
                 stock.getStockRate(),
+                stock.getPblcnQty(),
                 stock.getRnk1Remaining(),
                 stock.getRnk1Total(),
                 stock.getRnk2Remaining(),
                 stock.getRnk2Total(),
                 stock.getRnk3Remaining(),
-                stock.getRnk3Total()
+                stock.getRnk3Total(),
+                calcProbability(stock.getRnk1Total(), stock.getPblcnQty()),
+                calcProbability(stock.getRnk1Remaining(), circulatingQty),
+                calcProbability(stock.getRnk2Total(), stock.getPblcnQty()),
+                calcProbability(stock.getRnk2Remaining(), circulatingQty)
             );
+        }
+
+        private static double calcProbability(long numerator, long denominator) {
+            return denominator > 0 ? (double) numerator / denominator * 100 : 0.0;
         }
     }
 }
