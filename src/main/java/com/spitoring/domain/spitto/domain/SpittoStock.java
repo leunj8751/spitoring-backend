@@ -1,6 +1,7 @@
 package com.spitoring.domain.spitto.domain;
 
 import jakarta.persistence.*;
+import com.spitoring.domain.spitto.domain.SpittoType;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Table(
     name = "spitto_stock",
     indexes = {
-        @Index(name = "idx_game_episode", columnList = "game_type_cd, episode"),
+        @Index(name = "idx_spitto_episode", columnList = "spitto_type, draw"),
         @Index(name = "idx_inserted_at",  columnList = "inserted_at")
     }
 )
@@ -24,8 +25,9 @@ public class SpittoStock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "game_type_cd", nullable = false, length = 10)
-    private String gameTypeCd;       // 스피또 종류 코드 (SP500 / SP1000 / SP2000)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "spitto_type", nullable = false, length = 10)
+    private SpittoType spittoType;
 
     @Column(name = "game_type_nm", nullable = false, length = 20)
     private String gameTypeNm;       // 스피또 종류명
@@ -33,8 +35,8 @@ public class SpittoStock {
     @Column(name = "draw", nullable = false)
     private Integer draw;            // 회차
 
-    @Column(name = "stock_rate", nullable = false)
-    private Integer stockRate;       // 판매점 입고율 (%)
+    @Column(name = "release_rate", nullable = false)
+    private Integer releaseRate;      // 판매점 입고율 (%)
 
     @Column(name = "rnk1_remaining", nullable = false)
     private Long rnk1Remaining;      // 1등 잔여 수량

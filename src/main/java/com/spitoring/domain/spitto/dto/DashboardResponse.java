@@ -1,6 +1,7 @@
 package com.spitoring.domain.spitto.dto;
 
 import com.spitoring.domain.spitto.domain.SpittoStock;
+import com.spitoring.domain.spitto.domain.SpittoType;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -13,10 +14,10 @@ public record DashboardResponse(
 ) {
     @Builder
     public record SpittoItemDto(
-        String gameTypeCd,
+        SpittoType spittoType,
         String gameTypeNm,
         Integer draw,
-        Integer stockRate,
+        Integer releaseRate,
         Long pblcnQty,
         Long rnk1Remaining,
         Long rnk1Total,
@@ -30,13 +31,13 @@ public record DashboardResponse(
         Double rnk2CurrentWinProbability
     ) {
         public static SpittoItemDto from(SpittoStock stock) {
-            long circulatingQty = Math.round(stock.getPblcnQty() * stock.getStockRate() / 100.0);
+            long circulatingQty = Math.round(stock.getPblcnQty() * stock.getReleaseRate() / 100.0);
 
             return new SpittoItemDto(
-                stock.getGameTypeCd(),
+                stock.getSpittoType(),
                 stock.getGameTypeNm(),
                 stock.getDraw(),
-                stock.getStockRate(),
+                stock.getReleaseRate(),
                 stock.getPblcnQty(),
                 stock.getRnk1Remaining(),
                 stock.getRnk1Total(),

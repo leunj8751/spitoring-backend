@@ -23,7 +23,7 @@ public class LotteryService {
         LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
 
         var items = spittoStockRepository
-            .findAllByInsertedAtBetweenOrderByGameTypeCdAscDrawDesc(startOfDay, endOfDay)
+            .findAllByInsertedAtBetweenOrderBySpittoTypeAscDrawDesc(startOfDay, endOfDay)
             .stream()
             .map(DashboardResponse.SpittoItemDto::from)
             .toList();

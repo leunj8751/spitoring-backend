@@ -3,6 +3,8 @@ package com.spitoring.domain.notification.application;
 import com.spitoring.domain.notification.domain.NotificationSetting;
 import com.spitoring.domain.notification.domain.NotificationSettingRepository;
 import com.spitoring.domain.notification.dto.NotificationSettingRequest;
+import com.spitoring.domain.notification.dto.NotificationSettingResponse;
+import com.spitoring.domain.spitto.domain.SpittoType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,34 +13,32 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class NotificationSettingService {
 
     private final NotificationSettingRepository repository;
 
-    public List<NotificationSetting> getSettings(Long userId) {
-        return repository.findByUserIdAndEnabledTrue(userId);
+    @Transactional
+    public Long save(NotificationSettingRequest request, String userIp) {
+        NotificationSetting setting = NotificationSetting.builder()
+            .spittoType(SpittoType.from(request.spittoType()))
+            .releaseRate(request.releaseRate())
+            .rnk1RemainingMin(request.rnk1RemainingMin())
+            .rnk2RemainingMin(request.rnk2RemainingMin())
+            .userIp(userIp)
+            .build();
+
+        return repository.save(setting).getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<NotificationSettingResponse> getByUserIp(String userIp) {
+        return repository.findByUserIp(userIp).stream()
+            .map(NotificationSettingResponse::from)
+            .toList();
     }
 
     @Transactional
-    public NotificationSetting upsertSetting(Long userId, NotificationSettingRequest request) {
-        return repository.findByUserIdAndGameId(userId, request.gameId())
-            .map(existing -> {
-                existing.update(request.minStockRate(), request.minFirstPrize(), request.enabled());
-                return existing;
-            })
-            .orElseGet(() -> repository.save(NotificationSetting.builder()
-                .userId(userId)
-                .gameId(request.gameId())
-                .minStockRate(request.minStockRate())
-                .minFirstPrize(request.minFirstPrize())
-                .enabled(request.enabled())
-                .build()));
-    }
-
-    @Transactional
-    public void deleteSetting(Long userId, Integer gameId) {
-        repository.findByUserIdAndGameId(userId, gameId)
-            .ifPresent(repository::delete);
+    public void delete(Long id) {
+        repository.deleteById(id);
     }
 }

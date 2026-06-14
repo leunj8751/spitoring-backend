@@ -3,6 +3,7 @@ package com.spitoring.infra.crawler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spitoring.domain.spitto.domain.SpittoStock;
+import com.spitoring.domain.spitto.domain.SpittoType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -62,10 +63,10 @@ public class SpittoCrawler {
             long pblcnQty = fetchPblcnQty(ntslWnSn);
 
             result.add(SpittoStock.builder()
-                .gameTypeCd(item.path("stGmTypeCd").asText())
+                .spittoType(SpittoType.from(item.path("stGmTypeCd").asText()))
                 .gameTypeNm(item.path("stGmTypeNm").asText())
                 .draw(item.path("stEpsd").asInt())
-                .stockRate(item.path("stSpmtRt").asInt())
+                .releaseRate(item.path("stSpmtRt").asInt())
                 .rnk1Remaining(rnk1[0])
                 .rnk1Total(rnk1[1])
                 .rnk2Remaining(rnk2[0])

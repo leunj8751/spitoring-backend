@@ -1,20 +1,23 @@
 package com.spitoring.domain.notification.dto;
 
-import jakarta.validation.constraints.*;
-
-import java.math.BigDecimal;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record NotificationSettingRequest(
 
-    @NotNull(message = "게임 번호는 필수입니다.")
-    Integer gameId,
+    @NotBlank(message = "스피또 종류는 필수입니다.")
+    String spittoType,
 
-    @DecimalMin(value = "0.0", message = "입고율은 0 이상이어야 합니다.")
-    @DecimalMax(value = "100.0", message = "입고율은 100 이하이어야 합니다.")
-    BigDecimal minStockRate,
+    @NotNull(message = "입고율은 필수입니다.")
+    @Min(value = 0, message = "입고율은 0 이상이어야 합니다.")
+    @Max(value = 100, message = "입고율은 100 이하이어야 합니다.")
+    Integer releaseRate,
 
     @Min(value = 0, message = "1등 잔여 수량은 0 이상이어야 합니다.")
-    Long minFirstPrize,
+    Integer rnk1RemainingMin,
 
-    boolean enabled
+    @Min(value = 0, message = "2등 잔여 수량은 0 이상이어야 합니다.")
+    Integer rnk2RemainingMin
 ) {}

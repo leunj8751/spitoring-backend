@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface SpittoStockRepository extends JpaRepository<SpittoStock, Long> {
 
-    List<SpittoStock> findAllByOrderByGameTypeCdAscDrawDesc();
+    List<SpittoStock> findAllByOrderBySpittoTypeAscDrawDesc();
 
-    List<SpittoStock> findAllByInsertedAtBetweenOrderByGameTypeCdAscDrawDesc(LocalDateTime start, LocalDateTime end);
+    List<SpittoStock> findAllByInsertedAtBetweenOrderBySpittoTypeAscDrawDesc(LocalDateTime start, LocalDateTime end);
 }

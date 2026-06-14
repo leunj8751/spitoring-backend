@@ -1,16 +1,14 @@
 package com.spitoring.domain.notification.domain;
 
+import com.spitoring.domain.spitto.domain.SpittoType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-/**
- * 사용자별 알림 조건 설정
- */
 @Entity
-@Table(name = "notification_settings",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "game_id"}))
+@Table(name = "notification_setting")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -21,23 +19,23 @@ public class NotificationSetting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "spitto_type", nullable = false, length = 10)
+    private SpittoType spittoType;
 
-    @Column(nullable = false)
-    private Integer gameId;             // 알림 대상 스피또 게임 번호
+    @Column(name = "release_rate", nullable = false)
+    private Integer releaseRate;
 
-    @Column(precision = 5, scale = 2)
-    private BigDecimal minStockRate;    // 최소 입고율 조건 (%)
+    @Column(name = "rnk1_remaining_min", nullable = false)
+    private Integer rnk1RemainingMin;
 
-    private Long minFirstPrize;         // 최소 1등 잔여 수량 조건
+    @Column(name = "rnk2_remaining_min", nullable = false)
+    private Integer rnk2RemainingMin;
 
-    @Builder.Default
-    private boolean enabled = true;
+    @Column(name = "user_ip", nullable = false, length = 45)
+    private String userIp;
 
-    public void update(BigDecimal minStockRate, Long minFirstPrize, boolean enabled) {
-        this.minStockRate = minStockRate;
-        this.minFirstPrize = minFirstPrize;
-        this.enabled = enabled;
-    }
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }
